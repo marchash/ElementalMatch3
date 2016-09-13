@@ -1,0 +1,1 @@
+{"appID":"0ff631e18c3f4fd594f2b9a96682cdbf","dependencies":{"devkit-core":"https://github.com/gameclosure/devkit-core#v4.5.3"},"shortName":"ElementalMatch3","studio":{"domain":"studio.example.com","name":"Your Studio Name","stagingDomain":"staging.example.com"},"supportedOrientations":["portrait","landscape"],"title":"ElementalMatch3"}
