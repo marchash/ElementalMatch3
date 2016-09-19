@@ -3,12 +3,11 @@
  */
 
 // devkit imports
-import device;
+import device as Device;
 import ui.StackView as StackView;
 // user imports
 import src.TitleScreen as TitleScreen;
 import src.GameScreen as GameScreen;
-import src.util as util;
 
 /* Your application inherits from GC.Application, which is
  * exported and instantiated when the game is run.
@@ -22,16 +21,12 @@ exports = Class(GC.Application, function () {
     var titlescreen = new TitleScreen(),
         gamescreen = new GameScreen();
 
-    this.view.style.backgroundColor = '#000000';
-
-    util.scaleRootView(this, 750, 1334);
-
     var rootView = new StackView({
       superview: this,
       x: 0,
       y: 0,
-      width: 750,
-      height: 1334,
+      width: Device.screen.width,
+      height: Device.screen.height,
       clip: true
     });
 

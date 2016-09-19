@@ -1,10 +1,27 @@
 import animate;
+import device;
 import ui.View;
 import ui.ImageView;
 import ui.TextView;
 import ui.resource.Image as Image;
 
-var gem_size = 94;
+var boundsWidth = 576;
+var boundsHeight = 1024;
+var scaleWidth = device.screen.width / boundsWidth;
+var scaleHeight = device.screen.height / boundsHeight;
+var scale = Math.max(scaleHeight, scaleHeight);
+if ((device.isIOS || device.isIOSSimulator) && scaleHeight > 1.1)
+{
+	var gem_size = 72;
+}
+else if ((device.isIOS || device.isIOSSimulator) && scaleHeight <= 1.1)
+{
+	var gem_size = 75;
+}
+else
+{
+	var gem_size = 70;
+}
 
 exports = Class(ui.ImageView, function (supr) {
 

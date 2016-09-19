@@ -1,12 +1,18 @@
+import device;
 import ui.View;
 import ui.ImageView;
 import ui.TextView;
+
+var boundsWidth = 576;
+var boundsHeight = 1024;
+var scale = Math.max(device.screen.width / boundsWidth, device.screen.height / boundsHeight);
 
 exports = Class(ui.ImageView, function (supr) {
   this.init = function (opts) {
     opts = merge(opts, {
       x: 0,
       y: 0,
+      scale: scale,
       image: "resources/images/ui/titlescreen.png"
     });
 
