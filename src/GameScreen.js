@@ -25,8 +25,8 @@ else if ((device.isIOS || device.isIOSSimulator) && scaleHeight <= 1.1)
 }
 else
 {
-	var x_offset = 35,
-		y_offset = 278;
+	var x_offset = 38,
+		y_offset = 300;
 	var	gem_margin = 3;
 }
 var	board_size = 7; //variable to set how many gems exists inside. (7x7)
@@ -104,13 +104,13 @@ exports = Class(ui.ImageView, function (supr) {
 	        x: 113,
 	        y: 0,
 	        image: "resources/images/ui/header.png",
-	        width: 350,
+	        width: 360,
 	        height: 215
 	    });
 
 		this._score = new ui.TextView({
 			superview: this,
-			x: 138,
+			x: 142,
 			y: 40,
 			width: 300,
 			height: 200,
@@ -125,8 +125,8 @@ exports = Class(ui.ImageView, function (supr) {
 			image: "resources/images/cursors/selected.png",
 			x: 0,
 			y: 0,
-			width: 77,
-			height: 77,
+			width: 80,
+			height: 80,
 			visible: false
 		});
 	};
@@ -180,8 +180,8 @@ exports = Class(ui.ImageView, function (supr) {
 			image: "resources/images/cursors/selected.png",
 			x: 0,
 			y: 0,
-			width: 77,
-			height: 77,
+			width: 81,
+			height: 81,
 			visible: false
 		});
 	};
@@ -190,17 +190,17 @@ exports = Class(ui.ImageView, function (supr) {
 
 		this.header = new ui.ImageView({
 	      	superview: this,
-	        x: 38,
-	        y: 790,
+	        x: 63,
+	        y: 850,
 	        image: "resources/images/ui/header.png",
 	        width: 500,
-	        height: 165
+	        height: 150
 	    });
 
 		this._clock = new ui.TextView({
 			superview: this,
-			x: 63,
-			y: 850,
+			x: 88,
+			y: 895,
 			width: 450,
 			height: 100,
 			size: 35,
@@ -211,7 +211,7 @@ exports = Class(ui.ImageView, function (supr) {
 
 		this.scoreheader = new ui.ImageView({
 	      	superview: this,
-	        x: 113,
+	        x: 140,
 	        y: 0,
 	        image: "resources/images/ui/header.png",
 	        width: 350,
@@ -220,7 +220,7 @@ exports = Class(ui.ImageView, function (supr) {
 
 		this._score = new ui.TextView({
 			superview: this,
-			x: 138,
+			x: 165,
 			y: 40,
 			width: 300,
 			height: 200,
@@ -235,8 +235,8 @@ exports = Class(ui.ImageView, function (supr) {
 			image: "resources/images/cursors/selected.png",
 			x: 0,
 			y: 0,
-			width: 77,
-			height: 77,
+			width: 82,
+			height: 82,
 			visible: false
 		});
 	};
@@ -497,8 +497,8 @@ function clearGems(gems_to_destroy) {
 	if (points !== 0) {
 		var points_view = new ui.TextView({
 			superview: this,
-			x: 138,
-			y: 250,
+			x: (device.screen.width - 200) * Math.random(),
+			y: 200,
 			width: 300,
 			height: 150,
 			horizontalAlign: "center",
@@ -510,7 +510,7 @@ function clearGems(gems_to_destroy) {
 		this.addSubview(points_view);
 
 		var points_animation = setInterval(function() {
-			points_view.style.y -= 4.5;
+			points_view.style.y -= 5;
 		}, 50);
 
 		setTimeout(function() {

@@ -20,7 +20,7 @@ else if ((device.isIOS || device.isIOSSimulator) && scaleHeight <= 1.1)
 }
 else
 {
-	var gem_size = 70;
+	var gem_size = 76;
 }
 
 exports = Class(ui.ImageView, function (supr) {
