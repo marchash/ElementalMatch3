@@ -80,7 +80,6 @@ exports = Class(ui.ImageView, function (supr) {
 		this.interval = 100; //Tick interval, to show "real-time" gaming
 
 		this.selected_gem = null; //Variable to show a select cursor in a gem
-		this.input_disabled = false; //Variable to prevent a move while gem streaking
 
 		bindGemEvents.call(this);
 	};
@@ -301,6 +300,8 @@ function startGame() {
 
 	this._clock.updateOpts({ color: 'white' });
 	this._clock.updateOpts({ size: 35 });
+
+	this.input_disabled = false; //Variable to prevent a move while gem streaking
 }
 
 //fucntion that verifies end of game each 0.1 second
