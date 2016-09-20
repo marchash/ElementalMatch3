@@ -325,6 +325,8 @@ function tick() {
 
 function endGame() {
 	clearInterval(this.game_timer);
+	this._clock.setText("");
+	this.input_disabled = true;
 	this.game_time = this.game_length;
 	this.emit('gamescreen:end');
 }
