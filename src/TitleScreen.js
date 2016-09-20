@@ -20,12 +20,14 @@ exports = Class(ui.ImageView, function (supr) {
 
     this.addTitle();
 
-    var startbutton = new ui.View({
+    var startbutton = new ui.ImageView({
       superview: this,
-      x: 30,
+      x: 167.5,
+      centerX: true,
       y: 600,
-      width: 450,
-      height: 150
+      width: 241,
+      height: 105,
+      image: "resources/images/ui/play.png"
     });
 
     startbutton.on('InputSelect', bind(this, function () {
@@ -34,30 +36,16 @@ exports = Class(ui.ImageView, function (supr) {
   };
 
   this.addTitle = function() {
-      this.titleView = new ui.TextView({
-        superview: this,
-        x: 5,
-        y: 0,
-        width: 740,
-        height: 150,
-        size: 70,
-        text: "Element Match-3",
-        horizontalAlign: "center",
-        color: "red",
-        autoFontSize: true,
-        autoSize: true
-      });
-
       this.scoreView = new ui.TextView({
         superview: this,
-        x: 5,
+        centerX: true,
         y: 0,
-        width: 740,
-        height: 1000,
+        width: boundsWidth,
+        height: 100,
         size: 60,
-        text: "Can you get a good score in 120 seconds?",
+        text: "Do your best in 120 seconds!",
         horizontalAlign: "center",
-        color: "green",
+        color: "blue",
         wrap: true,
         autoFontSize: true,
         autoSize: true

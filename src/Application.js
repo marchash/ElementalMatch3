@@ -47,8 +47,6 @@ exports = Class(GC.Application, function () {
     */
     gamescreen.on('gamescreen:end', function () {
 
-      gamescreen.scores.push(gamescreen.score);
-
       titlescreen.scoreView.setText("Your Final Score: " + gamescreen.score);
 
       rootView.pop();

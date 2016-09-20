@@ -14,20 +14,20 @@ var scale = Math.max(scaleHeight, scaleHeight);
 if ((device.isIOS || device.isIOSSimulator) && scaleHeight > 1.1)
 {
 	var x_offset = 24,  //variable to set matrix of gem X's offset
-		y_offset = 315; //variable to set matrix of gem Y's offset
-	var	gem_margin = 5; //variable to set margin between gems
+		y_offset = 315, //variable to set matrix of gem Y's offset
+		gem_margin = 5; //variable to set margin between gems
 }
 else if ((device.isIOS || device.isIOSSimulator) && scaleHeight <= 1.1)
 {
-	var x_offset = 72,  //variable to set matrix of gem X's offset
-		y_offset = 315; //variable to set matrix of gem Y's offset
-	var	gem_margin = 2; //variable to set margin between gems
+	var x_offset = 72,
+		y_offset = 315,
+		gem_margin = 2;
 }
 else
 {
-	var x_offset = 38,
-		y_offset = 300;
-	var	gem_margin = 3;
+	var x_offset = 36,
+		y_offset = 300,
+		gem_margin = 3;
 }
 var	board_size = 7; //variable to set how many gems exists inside. (7x7)
 
@@ -50,7 +50,16 @@ exports = Class(ui.ImageView, function (supr) {
 		var game = this;
 
 		this.on('app:start', function() {
-			startGame.call(game);
+			animate(game._score).wait(1000)
+			.then(function () {
+				game._score.setText("READY?");
+			}).wait(1500).then(function () {
+				game._score.setText("SET!");
+			}).wait(1500).then(function () {
+				game._score.setText("GO!!!");
+			}).wait(1000).then(function () {
+				startGame.call(game);
+			});
 		});
 
 		if ((device.isIOS || device.isIOSSimulator) && scaleHeight > 1.1)
@@ -93,10 +102,8 @@ exports = Class(ui.ImageView, function (supr) {
 			y: 905,
 			width: 450,
 			height: 100,
-			size: 35,
 			horizontalAlign: "center",
-			wrap: false,
-			color: '#FFFFEE'
+			wrap: false
 		});
 
 		this.scoreheader = new ui.ImageView({
@@ -110,7 +117,7 @@ exports = Class(ui.ImageView, function (supr) {
 
 		this._score = new ui.TextView({
 			superview: this,
-			x: 142,
+			x: 140,
 			y: 40,
 			width: 300,
 			height: 200,
@@ -148,10 +155,8 @@ exports = Class(ui.ImageView, function (supr) {
 			y: 905,
 			width: 537,
 			height: 100,
-			size: 35,
 			horizontalAlign: "center",
-			wrap: false,
-			color: '#FFFFEE'
+			wrap: false
 		});
 
 		this.scoreheader = new ui.ImageView({
@@ -203,10 +208,8 @@ exports = Class(ui.ImageView, function (supr) {
 			y: 895,
 			width: 450,
 			height: 100,
-			size: 35,
 			horizontalAlign: "center",
-			wrap: false,
-			color: '#FFFFEE'
+			wrap: false
 		});
 
 		this.scoreheader = new ui.ImageView({
@@ -288,8 +291,6 @@ function startGame() {
 	var game = this;
 
 	this.score = 0;
-	this.score_multiplier = 1;
-	this.cleared_gems = 0;
 
 	this.game_length = 120000;
 	this.game_time = this.game_length;
@@ -298,6 +299,8 @@ function startGame() {
 		tick.call(game);
 	}, this.interval);
 
+	this._clock.updateOpts({ color: 'white' });
+	this._clock.updateOpts({ size: 35 });
 }
 
 //fucntion that verifies end of game each 0.1 second
@@ -305,12 +308,9 @@ function tick() {
 	if (this.game_time > 0) {
 		var time_ratio = this.game_time / this.game_length;
 
-		if (time_ratio <= .125) {
+		if (time_ratio === .125) {
 			this._clock.updateOpts({ color: 'red' });
-			this._clock.updateOpts({ size: 50 });
-		} else {
-			this._clock.updateOpts({ color: 'white' });
-			this._clock.updateOpts({ size: 35 });
+			this._clock.updateOpts({ size: 40 });
 		}
 
 		this._clock.setText("TIME REMAINING: " + Math.ceil(this.game_time/1000).toString());
@@ -384,6 +384,7 @@ function selectGem(gem) {
 	this.selected_view.style.x = x_offset + this.selected_gem.col * (this.selected_gem.style.width + gem_margin) - 4;
 	this.selected_view.style.visible = true;
 }
+
 //function to verify a move attempt. If it's valid (they are adjacent gems), validate the move and proceed to
 //clean the gems paired and look for future gems chain;
 //if not, deselect gem
@@ -400,7 +401,7 @@ function attemptMove(gem) {
 	if (valid_move === true) {
 		performMove.call(this, this.selected_gem, gem);
 		var gems_to_destroy = findGemStreaks.call(this);
-		clearGems.call(this, gems_to_destroy);
+		clearGems.call(this, gems_to_destroy, 1);
 
 		this.input_disabled = true; //disables a user input to clear gems
 		this.selected_gem = null;
@@ -410,6 +411,7 @@ function attemptMove(gem) {
 		this.selected_view.style.visible = false;
 	}
 }
+
 //finding gem streaks: row search first, then columns to return a coordinate [x,y] to function clearGems
 function findGemStreaks() {
 	var gems = this._gems;
@@ -480,32 +482,61 @@ function findGemStreaks() {
 	return gems_to_destroy;
 }
 
-function clearGems(gems_to_destroy) {
+function clearGems(gems_to_destroy, score_multiplier) {
 	var game = this;
 
-	this.cleared_gems += gems_to_destroy.length;
 	//adds a point system when gem streaking
-	if (gems_to_destroy.length === 3) {
-		this.score_multiplier = 1;
-	} else if (gems_to_destroy.length > 3) {
-		this.score_multiplier += gems_to_destroy.length - 3;
+	var count_gems=[0,0,0,0,0];
+	var points = 0;
+
+	for (var i = 0; i < gems_to_destroy.length; i++)
+	{
+		switch (gems_to_destroy[i].gemtype) {
+		case "gem_01":
+			count_gems[0]++;
+			break;
+		case "gem_02":
+			count_gems[1]++;
+			break;
+		case "gem_03":
+			count_gems[2]++;
+			break;
+		case "gem_04":
+			count_gems[3]++;
+			break;
+		case "gem_05":
+			count_gems[4]++;
+			break;
+		}
 	}
 
-	var points = this.score_multiplier * gems_to_destroy.length * 20;
+	for (var i = 0; i < count_gems.length; i++)
+	{
+		if (count_gems[i] > 0)
+		points += score_multiplier * ((count_gems[i]-2) * 60);
+	}
+
 	this.score += points;
 
-	if (points !== 0) {
+	if (points !== 0)
+	{
 		var points_view = new ui.TextView({
 			superview: this,
-			x: (device.screen.width - 200) * Math.random(),
+			x: 140,
 			y: 200,
 			width: 300,
-			height: 150,
+			height: 100,
+			size: 50,
+			wrap: false,
 			horizontalAlign: "center",
-			size: points,
-			text: "COMBO! +" + points,
+			text: "+" + points,
 			color: "white"
 		});
+
+		if(score_multiplier === 2)
+		{
+			points_view.setText("COMBO! +" + points);
+		}
 
 		this.addSubview(points_view);
 
@@ -516,8 +547,9 @@ function clearGems(gems_to_destroy) {
 		setTimeout(function() {
 			game.removeSubview(points_view);
 			clearInterval(points_animation);
-		}, 1000);
+		}, 500);
 	}
+
 	//verify the gems to remove and adds a little animation to clear them.
 	if (gems_to_destroy.length > 0) {
 		var game = this;
@@ -530,11 +562,11 @@ function clearGems(gems_to_destroy) {
 
 				ticker++;
 
-				if (ticker < 5) {
+				if (ticker === 1) {
 					gem.gem.setImage("resources/images/particles/"+ gem.gemtype+"_gleam.png");
-				} else if (ticker < 10) {
+				} else if (ticker === 5) {
 					gem.gem.setImage("resources/images/particles/"+ gem.gemtype+"_round.png");
-				} else {
+				} else if (ticker === 10) {
 					game._gems[gem.row][gem.col] = null;
 					game.removeSubview(gem);
 
@@ -555,6 +587,7 @@ function clearGems(gems_to_destroy) {
 		this.input_disabled = false;
 	}
 }
+
 //when removing a gem, there will be a hole, both in user interface and inside gem matrix
 //that will be filled by falling gems from top.
 function fillHole() {
@@ -581,6 +614,7 @@ function fillHole() {
 
 	dropNew.call(this);
 }
+
 //With holes on the top of stepped down columns, we proceed to fill the top of these stepped down columns
 function dropNew() {
 	var game = this;
@@ -620,9 +654,10 @@ function dropNew() {
 	//This timeout will loop until there are no remaining streaks.
 	//It serves to wait while replacing cleared gems to then continue the gem streaking.
 	setTimeout(function() {
-		clearGems.call(game, findGemStreaks.call(game));
+		clearGems.call(game, findGemStreaks.call(game), 2);
 	}, 250);
 }
+
 //Swapping the gems, just like a function swap() used in algorithms, to start a move.
 function performMove(selected_gem, affected_gem) {
 	this._gems[selected_gem.row][selected_gem.col] = affected_gem;
@@ -643,6 +678,7 @@ function performMove(selected_gem, affected_gem) {
 	affected_gem.style.y = temp_y;
 	affected_gem.style.x = temp_x;
 }
+
 //Used to move a existing gem, to fill the hole.
 function fallExistingGem(gem, destination) {
 	this._gems[gem.row][gem.col] = null;
@@ -657,6 +693,7 @@ function fallExistingGem(gem, destination) {
 
 	gem.fallIn(diff_y);
 }
+
 //Function to validate a move, verifying if there are at least a triplet of gems.
 function validMove(gem, move) {
 	var valid_gems = this._gems;
